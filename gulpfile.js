@@ -8,7 +8,7 @@ const unprefix = require('postcss-unprefix'); //removes browser prefixes from cs
 const purifycss = require('gulp-purifycss'); //removes unused css
 const image = require('gulp-image')//optimize images imagemin can't;
 
-//Todo transform image tags in html to picture tags for 4 screen sizes and have a retina display version for 4 screen sizes so 8 files
+//Todo inject srcset attributes into <img /> tags image tags for 4 screen sizes and have a retina display version for 4 screen sizes
 //Todo create cropped copies of the images for different screen sizes
 //Todo create a desktop application or ide plugin to select the area to crop for smaller devices
 
