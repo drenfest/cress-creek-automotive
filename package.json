@@ -13,6 +13,7 @@
     "browser-sync": "^2.24.6",
     "glob": "^7.1.2",
     "gulp": "^4.0.0",
+    "gulp-image": "^4.3.0",
     "gulp-imagemin": "^4.1.0",
     "gulp-postcss": "^8.0.0",
     "gulp-purifycss": "^0.2.0",
