@@ -7,9 +7,30 @@ const postcss = require('gulp-postcss'); // is the base for unprefix
 const unprefix = require('postcss-unprefix'); //removes browser prefixes from css so it's clean and we can apply the most up to date prefixes
 const purifycss = require('gulp-purifycss'); //removes unused css
 const image = require('gulp-image')//optimize images imagemin can't;
+const resizer = require('gulp-images-resizer');
+const fs = require('fs');
+const path = require('path');
+const replace = require('gulp-replace');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //Todo inject srcset attributes into <img /> tags image tags for 4 screen sizes and have a retina display version for 4 screen sizes
-//Todo create cropped copies of the images for different screen sizes
+
 //Todo create a desktop application or ide plugin to select the area to crop for smaller devices
 
 
@@ -51,7 +72,7 @@ const paths = {
     dest: 'public/js/'
   },
   images: {
-    src: 'src/img/*.{jpg,JPG,png,PNG,gif,GIF,jpeg,JPEG,svg,SVG}',
+    src: 'src/img/*',
     dest: 'public/img/'
   },
   html: {
@@ -79,7 +100,9 @@ function styles(){ //combine and prefix css files
 
 //Move Html To Public Dir
 function html(){
+  var headerContent = fs.readFileSync("src/templates/header.html");
   return gulp.src(paths.html.src)
+    .pipe(replace('{{header}}',headerContent))
     .pipe(gulp.dest(paths.html.dest))
     .pipe(browserSync.stream());
 }
@@ -109,12 +132,24 @@ function images() {
     }))
     .pipe(gulp.dest(paths.images.dest));
 };
+//images successfully crop at these widths Todo need to format html to call the images responsively and need to pull new image height into name
+function cropImages(){
+  let imageSizes = [540,768,900,1140,2000];
+  imageSizes.forEach(function(element){
+    return gulp.src(paths.images.src)
+      .pipe(resizer({
+        width: element
+      }))
+      .pipe(gulp.dest(paths.images.dest+element+'/'))
+  })
+}
 function watch(){
   //watch for changes in all sass files
   gulp.watch(paths.styles.src,styles()); //watch for style changes
   gulp.watch(paths.html.src,html()); //watches public folder and eventually will minimize the html files
   //watch for changes on all html files and reload the browser when they change
-  gulp.watch("src/*.html").on('change',browserSync.reload);
+  gulp.watch("src/*.html").on('change',gulp.series(html));
+  gulp.watch("public/*.html").on('change',browserSync.reload);
 }
 
 function loadServer(){ //setup the browser-sync server
@@ -130,13 +165,15 @@ function loadServer(){ //setup the browser-sync server
 /*
  * You can use CommonJS `exports` module notation to declare tasks
  */
+exports.cropImages = cropImages;
 exports.html = html;
 exports.styles = styles;
 exports.scripts = scripts;
 exports.images = images;
 exports.watch = watch;
+exports.loadServer = loadServer;
 
-let runServer = gulp.series(gulp.parallel(html,styles,scripts,images,watch));
+let runServer = gulp.series(gulp.parallel(html,styles,scripts,cropImages,images,watch,loadServer));
 //Static Server + File Watcher-> scss/html files
 gulp.task('runServer',runServer);
 
