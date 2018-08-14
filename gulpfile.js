@@ -11,6 +11,11 @@ const resizer = require('gulp-images-resizer');
 const fs = require('fs');
 const path = require('path');
 const replace = require('gulp-replace');
+const rs = require('replacestream');
+const through = require('through2');
+const stream = require('stream');
+const Transform = require('stream').Transform;
+const util = require('util');
 
 
 
@@ -97,12 +102,85 @@ function styles(){ //combine and prefix css files
     .pipe(gulp.dest(paths.styles.dest))
     .pipe(browserSync.stream());
 }
+// Create html templates from /src/data/pages.json file\
+function createTemplates(){
+  //parse /src/templates/page.html
+  //store page.html content into a variable
+  var pageContent = fs.readFileSync("src/templates/page.html");
+  //parse pages.json file
+  var getFileJson = require("./src/data/pages.json");//load the json file
+  var obj = JSON.parse(JSON.stringify(getFileJson)); //parse the json file
+obj.forEach(function() {
+  for (var i in obj){
+    //store link into link variable
+    var link = obj[i].link;
+    //store title into title variable
+    var title = obj[i].title;
+    //store desc into description variable
+    var desc = obj[i].desc;
 
+    //write all html templates where the
+      //filename is the link from the link variable
+    fs.writeFile('src/'+link,pageContent,function(){
+      console.log(link + ' was written\n');
+    });
+  }
+});
+}
+
+function fillTempTags() {
+  /*
+**GET ALL FILES
+ */
+  var templates = {
+
+  }
+  htmlFiles =[];
+  sitePages = [];
+  templateStrings = [];
+  var files1 = fs.readdirSync('src/templates');
+  for (files1I in files1){
+    var name = files1[files1I];
+    tempFileContents = fs.readFileSync('src/templates/'+name).toString();
+    tempStrings = tempFileContents.match(/{{(.*)}}/g);
+    for(var i in tempStrings){
+      tempString = tempStrings[i].replace(/{{(.*)}}/,"$1").toLowerCase();
+      if(fs.existsSync('src/templates/'+tempString+'.html')){
+        tempFileContents = tempFileContents.replace(tempStrings[i],fs.readFileSync('src/templates/'+tempString+'.html'));
+        addToTemplates = {"content": tempFileContents,"location":"src/templates/"+tempString+'.html'};
+        templates[tempString]=addToTemplates;
+      }
+    }
+    if(name.substring((name.length - 4),(name.length)) == 'html'){
+      htmlFiles.push('src/templates/'+name);
+      // var tempToReplace=;
+      // var replaceTempWith=;
+    }
+  }
+  fs.writeFileSync('src/data/temptags.json',JSON.stringify(templates),{flag: 'w+'});
+  console.log('wrote template files');
+
+}
 //Move Html To Public Dir
 function html(){
-  var headerContent = fs.readFileSync("src/templates/header.html");
+  createTemplates();
+  fillTempTags();
+  var getFileJson = require("./src/data/temptags.json");//load the json file
+  var obj = JSON.parse(JSON.stringify(getFileJson)); //parse the json file
   return gulp.src(paths.html.src)
-    .pipe(replace('{{header}}',headerContent))
+    .pipe(replace(/{{(.*)}}/g,`{{$1}}`.toLowerCase()))
+    .pipe(
+      replace(/{{(.*)}}/g,function(match){
+            matchKey = match.replace(/{{(.*)}}/,"$1").toLowerCase();
+            tempContent = obj[matchKey];
+            console.log(matchKey+':---->'+tempContent.content);
+            return tempContent.content;
+
+      }
+      )
+    )
+
+
     .pipe(gulp.dest(paths.html.dest))
     .pipe(browserSync.stream());
 }
@@ -172,6 +250,8 @@ exports.scripts = scripts;
 exports.images = images;
 exports.watch = watch;
 exports.loadServer = loadServer;
+exports.createTemplates = createTemplates;
+exports.fillTempTags = fillTempTags;
 
 let runServer = gulp.series(gulp.parallel(html,styles,scripts,cropImages,images,watch,loadServer));
 //Static Server + File Watcher-> scss/html files
