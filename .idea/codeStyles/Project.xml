@@ -1,0 +1,34 @@
+<component name="ProjectCodeStyleConfiguration">
+  <code_scheme name="Project" version="173">
+    <option name="LINE_SEPARATOR" value="&#10;" />
+    <HTMLCodeStyleSettings>
+      <option name="HTML_ATTRIBUTE_WRAP" value="0" />
+      <option name="HTML_TEXT_WRAP" value="0" />
+      <option name="HTML_KEEP_LINE_BREAKS" value="false" />
+      <option name="HTML_KEEP_LINE_BREAKS_IN_TEXT" value="false" />
+      <option name="HTML_KEEP_BLANK_LINES" value="0" />
+      <option name="HTML_ALIGN_ATTRIBUTES" value="false" />
+      <option name="HTML_ELEMENTS_TO_INSERT_NEW_LINE_BEFORE" value="body,div,p,form,h1,h2,h3,a" />
+    </HTMLCodeStyleSettings>
+    <JSCodeStyleSettings>
+      <option name="FORCE_SEMICOLON_STYLE" value="true" />
+      <option name="USE_DOUBLE_QUOTES" value="false" />
+      <option name="FORCE_QUOTE_STYlE" value="true" />
+    </JSCodeStyleSettings>
+    <codeStyleSettings language="HTML">
+      <option name="RIGHT_MARGIN" value="200" />
+      <option name="WRAP_ON_TYPING" value="1" />
+      <option name="SOFT_MARGINS" value="200" />
+      <indentOptions>
+        <option name="USE_TAB_CHARACTER" value="true" />
+        <option name="SMART_TABS" value="true" />
+      </indentOptions>
+    </codeStyleSettings>
+    <codeStyleSettings language="JavaScript">
+      <indentOptions>
+        <option name="INDENT_SIZE" value="2" />
+        <option name="CONTINUATION_INDENT_SIZE" value="2" />
+      </indentOptions>
+    </codeStyleSettings>
+  </code_scheme>
+</component>
